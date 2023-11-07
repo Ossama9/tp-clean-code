@@ -34,7 +34,7 @@ describe('calculateDiceScore', () => {
     });
 
     it('returns the sum for Chance (no combination)', () => {
-        expect(calculateDiceScore([2, 3, 4, 5, 6])).toBe(20);
+        expect(calculateDiceScore([2, 3, 4, 4, 6])).toBe(19);
     });
 
     it('returns the sum for Chance (no combination)', () => {
@@ -42,10 +42,14 @@ describe('calculateDiceScore', () => {
     });
 
     it('throws an error for invalid dice values', () => {
-        expect(() => calculateDiceScore([0, 1, 2, 3, 4])).toThrow('Invalid dice values');
+        expect(() => calculateDiceScore([0, 1, 2, 3, 4])).toThrow('Die values must be between 1 and 6.');
     });
 
     it('throws an error for an incorrect number of dice', () => {
-        expect(() => calculateDiceScore([1, 2, 3, 4])).toThrow('Incorrect number of dice');
+        expect(() => calculateDiceScore([1, 2, 3, 4])).toThrow('Dice rolls should be an array of 5 integers.');
+    });
+
+    it('throws an error for non-integer values in the dice array', () => {
+        expect(() => calculateDiceScore([1, 'two', 3, 4, 5])).toThrow('Dice rolls must contain only integer values.');
     });
 });
