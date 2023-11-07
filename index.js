@@ -1,45 +1,45 @@
-function calculateDiceScore(dice) {
-    if (!Array.isArray(dice) || dice.length !== 5) {
-        throw new Error('Incorrect number of dice');
+function calculateDiceScore(diceRolls) {
+    if (!Array.isArray(diceRolls) || diceRolls.length !== 5) {
+        throw new Error('Dice rolls should be an array of 5 integers.');
     }
 
-    if (dice.some(die => !Number.isInteger(die))) {
-        throw new Error('Non-integer values present');
+    if (diceRolls.some(die => !Number.isInteger(die))) {
+        throw new Error('Dice rolls must contain only integer values.');
     }
 
-    const sortedDice = dice.slice().sort((a, b) => a - b);
+    const sortedDiceRolls = diceRolls.slice().sort((firstDie, secondDie) => firstDie - secondDie);
 
-    const diceCounts = sortedDice.reduce((counts, die) => {
-        if (die < 1 || die > 6) {
-            throw new Error('Invalid dice values');
+    const diceValueCounts = sortedDiceRolls.reduce((valueCounts, dieValue) => {
+        if (dieValue < 1 || dieValue > 6) {
+            throw new Error('Die values must be between 1 and 6.');
         }
-        counts[die] = (counts[die] || 0) + 1;
-        return counts;
+        valueCounts[dieValue] = (valueCounts[dieValue] || 0) + 1;
+        return valueCounts;
     }, {});
 
-    const counts = Object.values(diceCounts);
 
-    // Check for YAMS
-    if (counts.includes(5)) return 50;
+    const countOccurrences = Object.values(diceValueCounts);
 
-    // Check for Grande Suite
-    if (JSON.stringify(sortedDice) === JSON.stringify([1, 2, 3, 4, 5]) ||
-        JSON.stringify(sortedDice) === JSON.stringify([2, 3, 4, 5, 6])) {
+    // Check for YAMS (five of a kind)
+    if (countOccurrences.includes(5)) return 50;
+
+    // Check for Grande Suite (large straight)
+    if (JSON.stringify(sortedDiceRolls) === JSON.stringify([1, 2, 3, 4, 5]) ||
+        JSON.stringify(sortedDiceRolls) === JSON.stringify([2, 3, 4, 5, 6])) {
         return 40;
     }
 
-    // Check for Carré
-    if (counts.includes(4)) return 35;
+    // Check for Carré (four of a kind)
+    if (countOccurrences.includes(4)) return 35;
 
-    // Check for Full
+    // Check for Full (full house)
+    if (countOccurrences.includes(3) && countOccurrences.includes(2)) return 30;
 
-    if (counts.includes(3) && counts.includes(2)) return 30;
-
-    // Check for Brelan
-    if (counts.includes(3)) return 28;
+    // Check for Brelan (three of a kind)
+    if (countOccurrences.includes(3)) return 28;
 
     // If no combination, return Chance (sum of all dice)
-    return sortedDice.reduce((sum, die) => sum + die, 0);
+    return sortedDiceRolls.reduce((total, currentDieValue) => total + currentDieValue, 0);
 }
 
 module.exports = calculateDiceScore;
